@@ -42,5 +42,30 @@ CHIP ALU {
         ng; // 1 if (out < 0),  0 otherwise
 
     PARTS:
-   // Put you code here:
+        // ---------------------------
+        // INTERNAL
+        // ---------------------------
+        Mux16(a=x,b=false,sel=zx,out=Ix1);
+        Mux16(a=y,b=false,sel=zy,out=Iy1);
+        Not16(in=Ix1,out=Ix1Not);
+        Not16(in=Iy1,out=Iy1Not);
+        Mux16(a=Ix1,b=Ix1Not,sel=nx,out=Ix2);
+        Mux16(a=Iy1,b=Iy1Not,sel=ny,out=Iy2);
+        Add16(a=Ix2,b=Iy2,out=IxyAdd);
+        And16(a=Ix2,b=Iy2,out=IxyAnd);
+        Mux16(a=IxyAnd,b=IxyAdd,sel=f,out=Io);
+        Not16(in=Io,out=IoNot);
+        Mux16(a=Io,b=IoNot,sel=no,out=Iout);
+
+        // Had to provide this gate 
+        // Because I could not use 2xOr8Way gates 
+        // (cannot use indexing of internal signals)
+        Or16Way(in=Iout,out=Izr);
+
+        // ---------------------------
+        // OUTPUTS
+        // ---------------------------
+        Or16(a=Iout,b=false,out=out);
+        Not(in=Izr,out=zr);
+        And16(a=Iout,b=true,out[15]=ng,out[0..14]=drop);     
 }
