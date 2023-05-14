@@ -10,10 +10,34 @@
  * (the loaded value will be emitted to out from the next time step onward).
  */
 
+/**
+* RAM composed of 512 Registers (i.e. 512*16=8192 bits =1 KiB)
+* Each Register is addressable (for read or write) individually
+* through the address input (log2(512) = 9 bits)
+* The operation is specified by the load signal
+*    - 1 : write
+*    - 0 : read
+* In case of a write operation, the value to write is the
+* input signal in.
+*/
+
 CHIP RAM512 {
     IN in[16], load, address[9];
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    // Address the right RAM64
+    DMux8Way(in=load,sel=address[6..8],a=Ia,b=Ib,c=Ic,d=Id,e=Ie,f=If,g=Ig,h=Ih);
+
+    RAM64(in=in,load=Ia,address=address[0..5],out=Ioa);
+    RAM64(in=in,load=Ib,address=address[0..5],out=Iob);
+    RAM64(in=in,load=Ic,address=address[0..5],out=Ioc);
+    RAM64(in=in,load=Id,address=address[0..5],out=Iod);
+    RAM64(in=in,load=Ie,address=address[0..5],out=Ioe);
+    RAM64(in=in,load=If,address=address[0..5],out=Iof);
+    RAM64(in=in,load=Ig,address=address[0..5],out=Iog);
+    RAM64(in=in,load=Ih,address=address[0..5],out=Ioh);
+
+    // Choose the right RAM64 output
+    Mux8Way16(a=Ioa,b=Iob,c=Ioc,d=Iod,e=Ioe,f=Iof,g=Iog,h=Ioh,sel=address[6..8],out=out);
 }

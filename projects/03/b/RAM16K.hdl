@@ -10,10 +10,30 @@
  * (the loaded value will be emitted to out from the next time step onward).
  */
 
+/**
+* RAM composed of 16000 Registers (i.e. 16000*16=256000 bits =32 Kb = 31.25 KB)
+* Each Register is addressable (for read or write) individually
+* through the address input (log2(16000) = 14 bits)
+* The operation is specified by the load signal
+*    - 1 : write
+*    - 0 : read
+* In case of a write operation, the value to write is the
+* input signal in.
+*/
+
 CHIP RAM16K {
     IN in[16], load, address[14];
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    // Address the right RAM4K
+    DMux4Way(in=load,sel=address[12..13],a=Ia,b=Ib,c=Ic,d=Id);
+
+    RAM4K(in=in,load=Ia,address=address[0..11],out=Ioa);
+    RAM4K(in=in,load=Ib,address=address[0..11],out=Iob);
+    RAM4K(in=in,load=Ic,address=address[0..11],out=Ioc);
+    RAM4K(in=in,load=Id,address=address[0..11],out=Iod);
+
+    // Choose the right RAM4K output
+    Mux4Way16(a=Ioa,b=Iob,c=Ioc,d=Iod,sel=address[12..13],out=out);
 }
