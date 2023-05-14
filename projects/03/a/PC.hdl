@@ -16,5 +16,17 @@ CHIP PC {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    Inc16(in=Io,out=Iinc);
+
+    // FIRST APPROACH
+    Mux8Way16(a=Io,b=false,c=in,d=false,e=Iinc,f=false,g=in,h=false,sel[0]=reset,sel[1]=load,sel[2]=inc,out=Isel);
+    Register(in=Isel,load=true,out=Io,out=out);
+
+
+    // ALTERNATIVE APPROACH
+    // We have to handle control signals 'priorities'
+    //Mux16(a=Io,b=Iinc,sel=inc,out=Io1);
+    //Mux16(a=Io1,b=in,sel=load,out=Io2);
+    //Mux16(a=Io2,b=false,sel=reset,out=IregIn);
+    //Register(in=IregIn,load=true,out=Io,out=out);
 }
