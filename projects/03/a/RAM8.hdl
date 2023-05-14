@@ -10,10 +10,34 @@
  * (the loaded value will be emitted to out from the next time step onward).
  */
 
+/**
+* RAM composed of 8 Registers (i.e. 16*8=128 bits)
+* Each Register is addressable (for read or write) individually
+* through the address input
+* The operation is specified by the load signal
+*    - 1 : write
+*    - 0 : read
+* In case of a write operation, the value to write is the
+* input signal in.
+*/
+
 CHIP RAM8 {
     IN in[16], load, address[3];
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    // Address the right register
+    DMux8Way(in=load,sel=address,a=Ia,b=Ib,c=Ic,d=Id,e=Ie,f=If,g=Ig,h=Ih);
+
+    Register(in=in,load=Ia,out=Ioa);
+    Register(in=in,load=Ib,out=Iob);
+    Register(in=in,load=Ic,out=Ioc);
+    Register(in=in,load=Id,out=Iod);
+    Register(in=in,load=Ie,out=Ioe);
+    Register(in=in,load=If,out=Iof);
+    Register(in=in,load=Ig,out=Iog);
+    Register(in=in,load=Ih,out=Ioh);
+
+    // Choose the right register output
+    Mux8Way16(a=Ioa,b=Iob,c=Ioc,d=Iod,e=Ioe,f=Iof,g=Iog,h=Ioh,sel=address,out=out);
 }
