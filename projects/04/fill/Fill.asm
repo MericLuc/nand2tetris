@@ -11,4 +11,68 @@
 // "white" in every pixel;
 // the screen should remain fully clear as long as no key is pressed.
 
-// Put your code here.
+  // Variables declaration
+  @black
+  M=-1
+
+  @white
+  M=0
+
+  @curColor
+  M=0
+
+  @currentPxLoc
+  M=0
+
+  // Infinite loop waiting for keyboard events
+(LOOP)
+  @SCREEN
+  D=A
+  @currentPxLoc
+  M=D
+
+  @KBD
+  D=M
+  @KB_EVT_PRESSED
+  D;JGT
+  @KB_EVT_NONE
+  D;JEQ
+
+  // Get color to display
+(KB_EVT_PRESSED)
+  @black
+  D=M
+  @curColor
+  M=D
+  @DRAW
+  0;JMP
+
+  // Get color to display
+(KB_EVT_NONE)
+  @white
+  D=M
+  @curColor
+  M=D
+  @DRAW
+  0;JMP
+
+  // Paint screen depending on keyboard event
+(DRAW)
+  @curColor
+  D=M
+
+  @currentPxLoc
+  A=M
+  M=D
+
+  @currentPxLoc
+  M=M+1
+  D=M
+
+  @KBD
+  D=A-D
+  @DRAW
+  D;JGT
+
+  @LOOP
+  0;JMP
